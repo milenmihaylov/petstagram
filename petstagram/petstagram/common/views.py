@@ -8,3 +8,6 @@ def landing_page(request):
 
 def testing_view(request):
     return HttpResponse('It works')
+
+def add_comment(request, pk):
+    pass
