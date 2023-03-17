@@ -18,26 +18,22 @@ def pet_detail(request, pk):
 	pet = Pet.objects.get(pk=pk)
 	pet.likes_count = pet.like_set.count()
 	if request.method == 'GET':
-		print(pet.comment_set.all()),
 		context = {
 			'pet': pet,
 			'comments': pet.comment_set.all(),
 			'comment_form': CommentForm()
 		}
 		return render(request, 'pet_detail.html', context)
+
+def comment_pet(request, pk):
+	pet = Pet.objects.get(pk=pk)
 	form = CommentForm(request.POST)
 	if form.is_valid():
 		Comment(
 			pet=pet,
 			comment=form.cleaned_data['comment'],
 		).save()
-		return redirect('pet detail', pk)
-	context = {
-		'pet': pet,
-		'comments': ['First comment', 'Second comment'],
-		'comment_form': form
-	}
-	return render(request, 'pet_detail.html', context)
+	return redirect('pet detail', pet.id)
 
 
 def like_a_pet(request, pk):
@@ -45,7 +41,7 @@ def like_a_pet(request, pk):
 	Like(
 		pet=pet,
 	).save()
-	return redirect('pet detail', pk)
+	return redirect('pet detail', pet.id)
 
 
 def create_pet(request):

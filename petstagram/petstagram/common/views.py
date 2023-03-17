@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def landing_page(request):
@@ -8,6 +8,3 @@ def landing_page(request):
 
 def testing_view(request):
     return HttpResponse('It works')
-
-def add_comment(request, pk):
-    pass

@@ -1,5 +1,6 @@
 from django import forms
 
+from petstagram.core.forms import BootstrapFormMixin
 from petstagram.pets.models import Pet
 
 PET_TYPE_CHOICES = [
@@ -9,50 +10,14 @@ PET_TYPE_CHOICES = [
 ]
 
 
-class PetCreateForm(forms.ModelForm):
-	type = forms.ChoiceField(
-		choices=PET_TYPE_CHOICES,
-		required=True,
-		widget=forms.Select(
-			attrs={
-				'class': 'form-control',
-			},
-		),
-	)
-	name = forms.CharField(
-		required=True,
-		widget=forms.TextInput(
-			attrs={
-				'class': 'form-control',
-			},
-		),
-	)
-	age = forms.IntegerField(
-		required=True,
-		widget=forms.TextInput(
-			attrs={
-				'class': 'form-control',
-				'type': 'number',
-			},
-		),
-	)
-	image_url = forms.URLField(
-		required=True,
-		widget=forms.TextInput(
-			attrs={
-				'class': 'form-control',
-			},
-		)
-	)
-	description = forms.CharField(
-		required=True,
-		widget=forms.Textarea(
-			attrs={
-				'class': 'form-control rounded-2',
-			}
-		)
-	)
-
+class PetCreateForm(forms.ModelForm, BootstrapFormMixin):
 	class Meta:
 		model = Pet
 		fields = '__all__'
+		widgets = {
+			'name': forms.TextInput(
+				attrs={
+					'class': 'some-class',
+				},
+			)
+		}

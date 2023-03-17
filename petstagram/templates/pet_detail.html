@@ -67,7 +67,7 @@
 				</div>
 			{% endif %}
 				<div class="box">
-					<form method="post">
+					<form method="post" action="{% url 'comment pet' pet.id %}">
 						{% csrf_token %}
 						{{ comment_form }}
 						<button class="btn btn-primary mt-2" type="submit">Add comment</button>
