@@ -25,6 +25,7 @@ def pet_detail(request, pk):
 		}
 		return render(request, 'pet_detail.html', context)
 
+
 def comment_pet(request, pk):
 	pet = Pet.objects.get(pk=pk)
 	form = CommentForm(request.POST)
@@ -45,10 +46,15 @@ def like_a_pet(request, pk):
 
 
 def create_pet(request):
-	create_form = PetCreateForm(request.POST)
+	if request.method == 'GET':
+		context = {
+			'create_form': PetCreateForm()
+		}
+		return render(request, 'pet_create.html', context)
+	create_form = PetCreateForm(request.POST, request.FILES)
 	if create_form.is_valid():
 		create_form.save()
-		return redirect('index')
+		return redirect('all pets')
 	context = {
 		'create_form': create_form,
 	}
@@ -59,19 +65,20 @@ def edit_pet(request, pk):
 	pet = Pet.objects.get(pk=pk)
 	if request.method == 'GET':
 		context = {
-			'edit_form': PetCreateForm(initial=pet.__dict__)
+			'edit_form': PetCreateForm(instance=pet)
 		}
 		return render(request, 'pet_edit.html', context)
 	else:
 		form = PetCreateForm(
 			request.POST,
+			request.FILES,
 			instance=pet,
 		)
 		if form.is_valid():
 			form.save()
 			return redirect('all pets')
 		context = {
-			'edit_form': PetCreateForm(request.POST, instance=pet)
+			'edit_form': PetCreateForm(request.POST, request.FILES, instance=pet)
 		}
 		return render(request, 'pet_edit.html', context)
 
