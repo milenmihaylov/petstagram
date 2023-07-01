@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 
 
 def landing_page(request):
-    return render(request, 'landing_page.html')
+    return redirect('index')
 
 
 def testing_view(request):

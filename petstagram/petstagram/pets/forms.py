@@ -10,14 +10,15 @@ PET_TYPE_CHOICES = [
 ]
 
 
-class PetCreateForm(forms.ModelForm, BootstrapFormMixin):
+class PetCreateForm(BootstrapFormMixin, forms.ModelForm):
 	class Meta:
 		model = Pet
-		fields = '__all__'
-		widgets = {
-			'name': forms.TextInput(
-				attrs={
-					'class': 'some-class',
-				},
-			)
-		}
+		exclude = ('user',)
+		# widgets = {
+		# 	'type': forms.TextInput(
+		# 		attrs={
+		# 			'readonly': 'readonly',
+		# 		}
+		# 	)
+		# }
+

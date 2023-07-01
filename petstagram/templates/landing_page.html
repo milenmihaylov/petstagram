@@ -12,15 +12,29 @@
 				<div class="inner cover">
 					<h1 class="cover-heading"></h1>
 					<div class="row">
-						<div class="col-lg-6">
-							<p class="lead">Already have an account? <br><a href="#" class="btn btn-lg btn-secondary">Log
-								in</a></p>
-						</div>
-						<div class="col-lg-6">
-							<p class="lead"> Do not have an account? <br>
-								<a href="#" class="btn btn-lg btn-secondary">Sign up</a>
-							</p>
-						</div>
+						{% if not user.is_authenticated %}
+{#							<div class="col-lg-6">#}
+{#								<p class="lead" href="{% url 'account details'%}"><a>Welcome, {{ user.username }}</a> <br>#}
+{#									<!-- <a href="#" class="btn btn-lg btn-secondary">Log in</a> -->#}
+{#								</p>#}
+{#							</div>#}
+{#							<div class="col-lg-6">#}
+{#								<p class="lead">#}
+{#									<a href="{% url 'logout' %}" class="btn btn-lg btn-secondary">Sign out</a>#}
+{#								</p>#}
+{#							</div>#}
+{#						{% else %}#}
+							<div class="col-lg-6">
+								<p class="lead">Already have an account? <br>
+									<a href="{% url 'login' %}" class="btn btn-lg btn-secondary">Log in</a>
+								</p>
+							</div>
+							<div class="col-lg-6">
+								<p class="lead"> Do not have an account? <br>
+									<a href="{% url 'signup' %}" class="btn btn-lg btn-secondary">Sign up</a>
+								</p>
+							</div>
+						{% endif %}
 					</div>
 				</div>
 			</div>

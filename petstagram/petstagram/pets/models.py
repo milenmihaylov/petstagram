@@ -1,10 +1,15 @@
 # from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 from django.db import models
+
+from petstagram.accounts.models import Account
 
 
 # def is_positive(value):
 # 	if value<=0:
 # 		raise ValidationError
+
+USER_MODEL = get_user_model()
 
 
 class Pet(models.Model):
@@ -35,7 +40,13 @@ class Pet(models.Model):
 
 	description = models.TextField()
 	image = models.ImageField(
-		upload_to='images'
+		upload_to='images/pets'
+	)
+
+	user = models.ForeignKey(
+		to=USER_MODEL,
+		on_delete=models.CASCADE,
+		null=True,
 	)
 
 
@@ -43,4 +54,9 @@ class Like(models.Model):
 	pet = models.ForeignKey(
 		Pet,
 		on_delete=models.CASCADE,
+	)
+	user = models.ForeignKey(
+		to=USER_MODEL,
+		on_delete=models.CASCADE,
+		null=True,
 	)
