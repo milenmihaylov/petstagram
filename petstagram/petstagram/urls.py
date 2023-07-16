@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from petstagram.common.views import landing_page, testing_view
+from petstagram.common.views import testing_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),

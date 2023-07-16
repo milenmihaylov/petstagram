@@ -1,4 +1,5 @@
 {% extends 'shared/pet_modify.html' %}
 {% block page_title %}Edit pet photo{% endblock %}
-{% block form %}{{ edit_form }}{% endblock %}
+{% block action %}"{% url 'edit pet' pet.id %}"{% endblock %}
+{% block form %}{{ edit_form }}{{ form }}{% endblock %}
 {% block btn_name %}Edit{% endblock %}

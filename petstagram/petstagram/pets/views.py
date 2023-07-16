@@ -1,114 +1,111 @@
+from os.path import join
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, FormView
 
-from petstagram.common.forms import CommentForm
-from petstagram.common.models import Comment
-from petstagram.pets.forms import PetCreateForm
+from petstagram import settings
+from petstagram.common.forms import CommentForm, CommentModelFormForCBV
+from petstagram.core.clean_up import clean_up_files
+from petstagram.core.views import PostOnlyView, BootstrapFromViewMixin
+from petstagram.pets.forms import EditPetForm
 from petstagram.pets.models import Pet, Like
+from petstagram.petstagram_auth.mixins import LoginRequiredMixin
 
 
-def pet_all(request):
-	all_pets = Pet.objects.all()
-	context = {
-		'pets': all_pets
-	}
-	return render(request, 'pets/pet_list.html', context)
+class PetListView(LoginRequiredMixin, ListView):
+	model = Pet
+	template_name = 'pets/pet_list.html'
+	context_object_name = 'pets'
 
 
-@login_required()
-def pet_detail(request, pk):
-	pet = Pet.objects.get(pk=pk)
-	pet.likes_count = pet.like_set.count()
-	is_liked_by_user = pet.like_set.filter(user_id=request.user.id).exists()
-	is_owner = pet.user == request.user
-	if request.method == 'GET':
-		context = {
-			'pet': pet,
-			'comments': pet.comment_set.all(),
-			'comment_form': CommentForm(),
-			'is_liked': is_liked_by_user,
-			'is_owner': is_owner,
-		}
-		return render(request, 'pets/pet_detail.html', context)
+class PetDetailView(LoginRequiredMixin, DetailView):
+	model = Pet
+	template_name = 'pets/pet_detail.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		self.object.likes_count = self.object.like_set.count()
+		context['comments'] = self.object.comment_set.all()
+		context['comment_form'] = CommentForm
+		context['is_liked'] = self.object.like_set.filter(user_id=self.request.user.id).exists()
+		context['is_owner'] = self.object.user == self.request.user
+		return context
 
 
-@login_required()
-def comment_pet(request, pk):
-	pet = Pet.objects.get(pk=pk)
-	form = CommentForm(request.POST)
-	if form.is_valid():
-		Comment(
-			pet=pet,
-			comment=form.cleaned_data['comment'],
-			user=request.user
-		).save()
-	return redirect('pet detail', pet.id)
+class CommentPetView(LoginRequiredMixin, FormView):
+	form_class = CommentModelFormForCBV
+
+	def form_valid(self, form):
+		comment = form.save(commit=False)
+		comment.user = self.request.user
+		comment.pet = Pet.objects.get(pk=self.kwargs['pk'])
+		comment.save()
+		return redirect('pet detail', self.kwargs['pk'])
 
 
-@login_required()
-def like_pet(request, pk):
-	pet = Pet.objects.get(pk=pk)
-	like_object_by_user = pet.like_set.filter(user_id=request.user.id).first()
-	if like_object_by_user:
-		like_object_by_user.delete()
-	else:
-		Like(
-			pet=pet,
-			user=request.user,
-		).save()
-	return redirect('pet detail', pet.id)
+# @login_required()
+# def like_pet(request, pk):
+# 	pet = Pet.objects.get(pk=pk)
+# 	like_object_by_user = pet.like_set.filter(user_id=request.user.id).first()
+# 	if like_object_by_user:
+# 		like_object_by_user.delete()
+# 	else:
+# 		Like(
+# 			pet=pet,
+# 			user=request.user,
+# 		).save()
+# 	return redirect('pet detail', pet.id)
 
 
-@login_required()
-def create_pet(request):
-	if request.method == 'GET':
-		context = {
-			'create_form': PetCreateForm()
-		}
-		return render(request, 'pets/pet_create.html', context)
-	create_form = PetCreateForm(request.POST, request.FILES)
-	if create_form.is_valid():
-		pet = create_form.save(commit=False)
-		pet.user = request.user
+class LikePetView(LoginRequiredMixin, View):
+
+	def get(self, request, pk):
+		pet = Pet.objects.get(pk=pk)
+		like_object = pet.like_set.filter(user_id=request.user.id).first()
+		if like_object:
+			like_object.delete()
+		else:
+			Like(
+				pet=pet,
+				user=request.user
+			).save()
+		return redirect('pet detail', pk)
+
+
+class PetCreateView(LoginRequiredMixin, BootstrapFromViewMixin, CreateView):
+	model = Pet
+	template_name = 'pets/pet_create.html'
+	fields = ('name', 'description', 'image', 'age', 'type')
+
+	def form_valid(self, form):
+		pet = form.save(commit=False)
+		pet.user = self.request.user
 		pet.save()
-		return redirect('all pets')
-	context = {
-		'create_form': create_form,
-	}
-	return render(request, 'pets/pet_create.html', context)
+		return super().form_valid(form)
+
+	def get_success_url(self):
+		return reverse_lazy('pet detail', kwargs={'pk': self.object.id})
 
 
-@login_required()
-def edit_pet(request, pk):
-	pet = Pet.objects.get(pk=pk)
-	if request.method == 'GET':
-		context = {
-			'edit_form': PetCreateForm(instance=pet)
-		}
-		return render(request, 'pets/pet_edit.html', context)
-	else:
-		form = PetCreateForm(
-			request.POST,
-			request.FILES,
-			instance=pet,
-		)
-		if form.is_valid():
-			form.save()
-			return redirect('all pets')
-		context = {
-			'edit_form': PetCreateForm(request.POST, request.FILES, instance=pet)
-		}
-		return render(request, 'pets/pet_edit.html', context)
+class PetUpdateView(LoginRequiredMixin, UpdateView):
+	model = Pet
+	template_name = 'pets/pet_edit.html'
+	form_class = EditPetForm
+
+	def form_valid(self, form):
+		old_image = self.get_object().image
+		if old_image:
+			clean_up_files(join(settings.MEDIA_ROOT, str(old_image)))
+		return super().form_valid(form)
+
+	def get_success_url(self):
+		return reverse_lazy('pet detail', kwargs={'pk': self.object.id})
 
 
-@login_required()
-def delete_pet(request, pk):
-	pet = Pet.objects.get(pk=pk)
-	if request.method == 'GET':
-		context = {
-			'pet_name': pet.name
-		}
-		return render(request, 'pets/pet_delete.html', context)
-	else:
-		pet.delete()
-		return redirect('all pets')
+class PetDeleteView(LoginRequiredMixin, DeleteView):
+	model = Pet
+	template_name = 'pets/pet_delete.html'
+	success_url = reverse_lazy('all pets')

@@ -1,12 +1,14 @@
 from django import forms
 from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth.forms import UserCreationForm, UsernameField, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, UsernameField
 from django.core.exceptions import ValidationError
+
+from petstagram.core.forms import BootstrapFormMixin
 
 USER_MODEL = get_user_model()
 
 
-class SignupUserForm(UserCreationForm):
+class SignupUserForm(BootstrapFormMixin, UserCreationForm):
 	class Meta:
 		model = USER_MODEL
 		fields = ("username",)

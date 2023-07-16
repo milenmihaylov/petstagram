@@ -1,8 +1,8 @@
-from petstagram.common.views import landing_page, testing_view
+from petstagram.common.views import testing_view, LandingPageView
 from django.urls import path
 
 urlpatterns = [
-    path('', landing_page, name='index'),
+    path('', LandingPageView.as_view(), name='index'),
     path('testing/', testing_view, name='testing'),
 ]
 
