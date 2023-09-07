@@ -74,8 +74,8 @@ DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.postgresql',
 		'NAME': 'petstagram',
-		'USER': 'db_admin',
-		'PASSWORD': '1123QwER',
+		'USER': 'postgres-user',
+		'PASSWORD': 'kit-kniga',
 		'HOST': '127.0.0.1',
 		'PORT': '5432',
 	}
@@ -110,9 +110,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
 	join(BASE_DIR, 'static'),
@@ -120,11 +117,15 @@ STATICFILES_DIRS = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = reverse_lazy('login')
 
 AUTH_USER_MODEL = 'petstagram_auth.PetstagramUser'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'milenmihaylov42@gmail.com'
+EMAIL_HOST_PASSWORD = 'ljrhjzevlvqqxaty'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
