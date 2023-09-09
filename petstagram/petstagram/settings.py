@@ -1,3 +1,4 @@
+from os import getenv
 from os.path import join
 from pathlib import Path
 
@@ -10,16 +11,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5)rkt&(+9^0zp7vx5_!p^%xhk-c3(9le6+%i!g!)c@gid-6v$t'
+SECRET_KEY = getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(getenv("DEBUG")))
 
-ALLOWED_HOSTS = [
-	'127.0.0.1',
-	'5bc7-95-42-50-190.eu.ngrok.io',
-	'37c5-95-42-50-190.eu.ngrok.io',
-]
+ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', '').split()
 
 # Application definition
 
@@ -30,6 +27,7 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+
 	'petstagram.petstagram_auth',
 	'petstagram.accounts',
 	'petstagram.common',
@@ -73,11 +71,11 @@ WSGI_APPLICATION = 'petstagram.wsgi.application'
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.db.backends.postgresql',
-		'NAME': 'petstagram',
-		'USER': 'postgres-user',
-		'PASSWORD': 'kit-kniga',
-		'HOST': '127.0.0.1',
-		'PORT': '5432',
+		'NAME': getenv('DB_NAME'),
+		'USER': getenv('DB_USER'),
+		'PASSWORD': getenv('DB_PASSWORD'),
+		'HOST': getenv('DB_HOST'),
+		'PORT': getenv('DB_PORT'),
 	}
 }
 
@@ -110,9 +108,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+STATIC_ROOT = getenv('STATIC_ROOT')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-	join(BASE_DIR, 'static'),
+	join(BASE_DIR, 'static_files'),
 )
 MEDIA_URL = '/media/'
 MEDIA_ROOT = join(BASE_DIR, 'media')
@@ -124,8 +123,8 @@ LOGIN_URL = reverse_lazy('login')
 AUTH_USER_MODEL = 'petstagram_auth.PetstagramUser'
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'milenmihaylov42@gmail.com'
-EMAIL_HOST_PASSWORD = 'ljrhjzevlvqqxaty'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = getenv('EMAIL_HOST')
+EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = getenv('EMAIL_PORT')
+EMAIL_USE_TLS = bool(int(getenv('EMAIL_USE_TLS')))

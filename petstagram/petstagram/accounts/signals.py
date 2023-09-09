@@ -33,4 +33,4 @@ def create_account(sender, instance, created, **kwargs):
 		Account.objects.create(
 			user=instance
 		)
-		send_successful_registration_email(instance)  # (instance)
+		send_successful_registration_email(instance)
