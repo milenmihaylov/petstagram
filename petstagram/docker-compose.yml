@@ -11,7 +11,7 @@ services:
         env_file:
             -   ./envs/.env
         volumes:
-            -   /tmp/app_resources/static:/app/static_files
+            -   /tmp/app_resources/static:/app/static
         command: gunicorn --bind=0.0.0.0:8000 petstagram.wsgi:application
         depends_on:
             -   db

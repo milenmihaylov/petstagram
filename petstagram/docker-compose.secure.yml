@@ -1,0 +1,66 @@
+version: '3.4'
+
+services:
+    web:
+        image: milenmihaylov/petstagram:2023_09
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            -   "8000:8000"
+        env_file:
+            - envs/.env.secure
+        volumes:
+            -   /tmp/app_resources/static:/app/static
+        command: gunicorn --bind=0.0.0.0:8000 petstagram.wsgi:application
+        depends_on:
+            -   db
+
+    db:
+        image: postgres
+        restart: always
+        ports:
+            -   "5432:5432"
+        env_file:
+            - envs/.env.secure.db
+        volumes:
+            - ./postgresql:/var/lib/postgresql/data
+
+    nginx-proxy:
+        container_name: nginx-proxy
+        build: nginx
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /tmp/app_resources/static:/home/app/web/staticfiles
+            - ./nginx/conf.d:/etc/nginx/conf.d
+            - certs:/etc/nginx/certs
+            - html:/usr/share/nginx/html
+            - vhost:/etc/nginx/vhost.d
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+        depends_on:
+            - web
+
+    acme-companion:
+        image: nginxproxy/acme-companion
+        env_file:
+            - envs/.env.secure
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - certs:/etc/nginx/certs
+            - html:/usr/share/nginx/html
+            - vhost:/etc/nginx/vhost.d
+            - acme:/etc/acme.sh
+        depends_on:
+            -   nginx-proxy
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  certs:
+  html:
+  vhost:
+  acme:
