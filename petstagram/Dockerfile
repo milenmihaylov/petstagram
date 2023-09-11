@@ -13,5 +13,5 @@ COPY manage.py /app/manage.py
 COPY static /app/static
 COPY static_files /app/static_files
 COPY templates /app/templates
-COPY media /app/media
+COPY media_files /app/media
 COPY petstagram /app/petstagram

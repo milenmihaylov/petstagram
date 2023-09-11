@@ -2,4 +2,7 @@ location /static/ {
   alias /home/app/web/staticfiles/;
   add_header Access-Control-Allow-Origin *;
 }
-# TODO ADD for media
+
+location /media/ {
+        alias /home/app/web/mediafiles/;
+}
