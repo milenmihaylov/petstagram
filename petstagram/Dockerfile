@@ -11,7 +11,7 @@ RUN pip install -r requirements.txt
 
 COPY manage.py /app/manage.py
 COPY static /app/static
-COPY staticfiles /app/static_files
+COPY static_files /app/static_files
 COPY templates /app/templates
 COPY media_files /app/media
 COPY petstagram /app/petstagram
