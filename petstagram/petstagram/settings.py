@@ -111,7 +111,7 @@ USE_TZ = True
 STATIC_ROOT = getenv('STATIC_ROOT')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-	join(BASE_DIR, 'static_files'),
+	join(BASE_DIR, 'staticfiles'),
 )
 MEDIA_URL = '/media/'
 MEDIA_ROOT = join(BASE_DIR, 'media_files')
