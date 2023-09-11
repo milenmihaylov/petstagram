@@ -108,7 +108,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-#STATIC_ROOT = getenv('STATIC_ROOT')
+STATIC_ROOT = getenv('STATIC_ROOT')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
 	join(BASE_DIR, 'static_files'),
