@@ -8,7 +8,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from petstagram import settings
 from petstagram.common.forms import CommentForm, CommentModelFormForCBV
-from petstagram.core.clean_up import clean_up_files
 from petstagram.core.views import PostOnlyView, BootstrapFromViewMixin
 from petstagram.pets.forms import EditPetForm
 from petstagram.pets.models import Pet, Like
@@ -96,9 +95,8 @@ class PetUpdateView(LoginRequiredMixin, UpdateView):
 	form_class = EditPetForm
 
 	def form_valid(self, form):
-		old_image = self.get_object().image
-		if old_image:
-			clean_up_files(join(settings.MEDIA_ROOT, str(old_image)))
+		if self.request.FILES.get('image'):  # if new image
+			self.get_object().image.delete()  # delete old image
 		return super().form_valid(form)
 
 	def get_success_url(self):

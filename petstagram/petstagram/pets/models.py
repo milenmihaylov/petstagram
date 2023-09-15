@@ -49,6 +49,10 @@ class Pet(models.Model):
 		null=True,
 	)
 
+	def delete(self, **kwargs):
+		self.image.delete()
+		super().delete(**kwargs)
+
 
 class Like(models.Model):
 	pet = models.ForeignKey(
